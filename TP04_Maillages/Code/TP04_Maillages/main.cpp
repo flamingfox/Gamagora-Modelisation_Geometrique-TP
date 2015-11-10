@@ -29,7 +29,7 @@ Mesh m;
 int main(int argc, char **argv) 
 {
 	
-	m = OFFManager::meshLoader("max.off");
+	m = OFFManager::meshLoader("bunny.off");
 
 	std::cout << "nb vertex : " << m.nbvertex() << std::endl;
 	std::cout << "nb face : " << m.nbface()/3 << std::endl;

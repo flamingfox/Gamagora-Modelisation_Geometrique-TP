@@ -30,19 +30,20 @@ void Aretes::addArete(const unsigned int &indicePoint1, const unsigned int &indi
 
 void Aretes::getNbAretesBySommet(float& nbMin, float& nbMax){
 
-	nbMin = 999999; nbMax = 0;
+	nbMin = FLT_MAX; nbMax = FLT_MIN;
 
 	for(unsigned int i=0; i<nbVertex; i++){
 		int nbAppel = 0;
 
 		for(unsigned int j=0; j<listArete.size(); j++){
-			if(listArete[j].first == j || listArete[j].second == j)
+			if(listArete[j].first == i || listArete[j].second == i)
 				nbAppel++;
 		}
 
 		if(nbAppel > nbMax)
 			nbMax = nbAppel;
-		else if(nbAppel < nbMin)
+		
+		if(nbAppel < nbMin)
 			nbMin = nbAppel;
 	}
 }
@@ -75,8 +76,8 @@ unsigned int Aretes::getNbAretesBy0Et1Face(const Mesh& mesh){
 
 bool Aretes::findPairInVector(const unsigned int &indicePoint1, const unsigned int &indicePoint2) const{
 	for(int i=0; i<listArete.size(); i++){
-		if(indicePoint1 == listArete[i].first || indicePoint2 == listArete[i].second)
-			if(indicePoint1 == listArete[i].first || indicePoint2 == listArete[i].second)
+		if(indicePoint1 == listArete[i].first || indicePoint1 == listArete[i].second)
+			if(indicePoint2 == listArete[i].first || indicePoint2 == listArete[i].second)
 				return true;
 	}
 	return false;

@@ -124,14 +124,12 @@ void render_scene()
 	//c'est ici qu'on dessine
 	glLoadIdentity();
 
-	glLightiv(GL_LIGHT0, GL_POSITION, posLight);
+	//glLightiv(GL_LIGHT0, GL_POSITION, posLight);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	const float rotation = fmod(glutGet(GLUT_ELAPSED_TIME) / 1000.0 * 20, 360.0 );
 
-	glRotated(45, 0,0,1);
-	//glRotated(rotation, 0,1,0);
-
+	glRotated(rotation, 0,0,1);
 
 	glColor3f(0.0,0.0,1.0); //Z bleu
 		glBegin(GL_LINES);
@@ -160,11 +158,7 @@ void render_scene()
 		glPopMatrix();
 		glPopMatrix();
 
-
-
 		glTranslated(-5,5,0);
-		glScaled(0.65,0.65,0.65);
-		
-		
+		glScaled(0.65,0.65,0.65);		
 	}
 }
