@@ -18,11 +18,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    lib/myglwidget.cpp \
-    mainwindow.cpp \
-    lib/struct.cpp
+    lib/myglwidget.cpp \    
+    lib/struct.cpp \
+    windowHermite.cpp \
+    windowBernsteinSimple.cpp \
+    windowBernsteinDouble.cpp
 
-HEADERS  += \
-    mainwindow.h \
+HEADERS  += \    
     lib/myglwidget.h \
-    lib/struct.h
+    lib/struct.h \
+    windowHermite.h \
+    windowBernsteinSimple.h \
+    windowBernsteinDouble.h
