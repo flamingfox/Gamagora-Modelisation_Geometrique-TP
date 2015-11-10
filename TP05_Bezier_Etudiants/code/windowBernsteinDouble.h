@@ -45,8 +45,9 @@ public:
 
 private:
 
-    void Bezier(point3 Courbe[], const int &nbPoint, const int& resolution);
-    void C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2, const int& resolution);
+    point3 Bezier(point3 Courbe[], const int &nbPoint, const float& u);
+    void C0DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2);
+    void C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2);
 
     // Fonction Factorielle
     float fact(int n);

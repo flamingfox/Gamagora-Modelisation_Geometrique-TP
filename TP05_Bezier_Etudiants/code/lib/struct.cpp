@@ -93,3 +93,7 @@ point3&	point3::normalize(){
 
 	return *this;
 }
+
+float point3::dotProduct(const point3& vec2) const{
+    return (x*vec2.x + y*vec2.y + z*vec2.z);
+}

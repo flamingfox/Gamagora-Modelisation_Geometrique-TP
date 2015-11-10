@@ -113,7 +113,6 @@ void WindowBernsteinSimple::paintGL()
         for(int j=0; j< nbPointControle; j++){
             pU = pU + TabPC[j]*Bernstein(j, nbPointControle-1, i/resolution);
         }
-
         glVertex3f(pU.x, pU.y, pU.z);
     }
 

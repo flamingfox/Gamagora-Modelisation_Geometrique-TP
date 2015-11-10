@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     //WindowHermite w;
     //WindowBernsteinSimple w;
     WindowBernsteinDouble w;
-    //w.resolution = 10;
+    w.resolution = 40;
     w.show();
 
     return a.exec();

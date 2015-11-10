@@ -22,10 +22,10 @@ void WindowBernsteinDouble::initializeGL()
     Courbe1[2] = point3(1,1,0);
     Courbe1[3] = point3(2,-2,0);
 
-    Courbe2[0] = point3(3,-2,0);
-    Courbe2[1] = point3(4,1,0);
-    Courbe2[2] = point3(6,1,0);
-    Courbe2[3] = point3(7,-2,0);
+    Courbe2[0] = point3(2,-2,0);
+    Courbe2[1] = point3(3,1,0);
+    Courbe2[2] = point3(5,1,0);
+    Courbe2[3] = point3(6,-2,0);
 }
 
 void WindowBernsteinDouble::keyPressEvent(QKeyEvent *keyEvent)
@@ -117,47 +117,101 @@ void WindowBernsteinDouble::paintGL()
 
     // Dessiner ici la courbe de Bézier.
     // Vous devez avoir implémenté Bernstein précédemment.
-    glColor3f (0.0, 1.0, 1.0);
-    glBegin(GL_LINE_STRIP);
-    Bezier(Courbe1, nbPointControle, resolution);
-    glEnd();
 
-    glColor3f (1.0, 1.0, 0.0);
-    glBegin(GL_LINE_STRIP);
-    Bezier(Courbe2, nbPointControle, resolution);
-    glEnd();
-
-    glColor3f (1.0, 1.0, 1.0);
-    glBegin(GL_LINE_STRIP);
-    C1DoubleBezier(Courbe1, Courbe2, nbPointControle, nbPointControle, resolution);
-    glEnd();
+    //C0DoubleBezier(Courbe1, Courbe2, nbPointControle, nbPointControle);
+    C1DoubleBezier(Courbe1, Courbe2, nbPointControle, nbPointControle);
 
     glFlush();
 }
 
-void WindowBernsteinDouble::Bezier(point3 Courbe[], const int &nbPoint, const int &resolution)
-{
-    for(float i=0; i<=resolution; i++){
-        point3 pU;
-        for(int j=0; j< nbPoint; j++){
-            pU = pU + Courbe[j]*Bernstein(j, nbPoint-1, i/resolution);
-        }
-        glVertex3f(pU.x, pU.y, pU.z);
+point3 WindowBernsteinDouble::Bezier(point3 Courbe[], const int &nbPoint, const float& u)
+{    
+    point3 pU;
+    for(int j=0; j< nbPoint; j++){
+        pU = pU + Courbe[j]*Bernstein(j, nbPoint-1, u);
     }
+
+    return pU;
 }
 
-void WindowBernsteinDouble::C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2, const int &resolution)
+void WindowBernsteinDouble::C0DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2)
 {
-    if( Courbe1[nbPoint1-1].x != Courbe2[0].x && Courbe1[nbPoint1-1].y != Courbe2[0].y && Courbe1[nbPoint1-1].z != Courbe2[0].z ){
+    glColor3f (0.0, 1.0, 1.0);
+    glBegin(GL_LINE_STRIP);
+    for(float i=0; i<=resolution; i++){
+        point3 pU = Bezier(Courbe1, nbPoint1, i/resolution );
+        glVertex3f(pU.x, pU.y, pU.z);
+    }
+    glEnd();
+
+    glColor3f (1.0, 1.0, 1.0);
+    glBegin(GL_LINE_STRIP);
+    if( Courbe1[nbPoint1-1].x != Courbe2[0].x || Courbe1[nbPoint1-1].y != Courbe2[0].y || Courbe1[nbPoint1-1].z != Courbe2[0].z ){
 
         point3 v0 = Courbe1[nbPoint1-1] - Courbe1[nbPoint1-2];
         point3 v1 = Courbe2[1] - Courbe2[0];
 
-        //v0 = v0.normalize();
-        //v1 = v1.normalize();
-
         hermite(Courbe1[nbPoint1-1], Courbe2[0], v0, v1, resolution);
     }
+    glEnd();
+
+    glColor3f (1.0, 1.0, 0.0);
+    glBegin(GL_LINE_STRIP);
+    for(float i=0; i<=resolution; i++){
+        point3 pU = Bezier(Courbe2, nbPoint2, i/resolution );
+        glVertex3f(pU.x, pU.y, pU.z);
+    }
+    glEnd();
+
+}
+
+void WindowBernsteinDouble::C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2)
+{
+    point3 tangente = Courbe2[1] - Courbe1[nbPoint1-2];
+    tangente = tangente.normalize();
+
+    float dCourbe1 = (Courbe1[nbPoint1-2] - Courbe1[nbPoint1-1]).dotProduct(tangente);
+    float dCourbe2 = (Courbe2[1] - Courbe2[0]).dotProduct(tangente);
+
+    point3 Courbe1bis[nbPoint1];
+    for(int i=0; i<nbPoint1; i++){
+        Courbe1bis[i] = Courbe1[i];
+    }
+
+    point3 Courbe2bis[nbPoint2];
+    for(int i=0; i<nbPoint2; i++){
+        Courbe2bis[i] = Courbe2[i];
+    }
+
+    Courbe1bis[nbPoint1-2] = Courbe1[nbPoint1] + tangente*dCourbe1;
+    Courbe2bis[1] = Courbe2[0] + tangente*dCourbe2;
+
+    glColor3f (0.0, 1.0, 1.0);
+    glBegin(GL_LINE_STRIP);
+    for(float i=0; i<=resolution; i++){
+        point3 pU = Bezier(Courbe1bis, nbPoint1, i/resolution );
+        glVertex3f(pU.x, pU.y, pU.z);
+    }
+    glEnd();
+
+    glColor3f (1.0, 1.0, 0.0);
+    glBegin(GL_LINE_STRIP);
+    for(float i=0; i<=resolution-1; i++){
+        point3 pU = Bezier(Courbe2bis, nbPoint2, i/resolution );
+        glVertex3f(pU.x, pU.y, pU.z);
+    }
+    glEnd();
+
+    glColor3f (1.0, 0.0, 1.0);
+    glBegin(GL_LINES);
+
+    glVertex3f(Courbe1bis[nbPoint1-1].x, Courbe1bis[nbPoint1-1].y, Courbe1bis[nbPoint1-1].z);
+    glVertex3f(Courbe1bis[nbPoint1-2].x, Courbe1bis[nbPoint1-2].y, Courbe1bis[nbPoint1-2].z);
+
+    glVertex3f(Courbe2bis[0].x, Courbe2bis[0].y, Courbe2bis[0].z);
+    glVertex3f(Courbe2bis[1].x, Courbe2bis[1].y, Courbe2bis[1].z);
+
+    glEnd();
 }
 
 float WindowBernsteinDouble::fact(const int n)
@@ -181,8 +235,6 @@ float WindowBernsteinDouble::hermite(const point3 &p0, const point3 &p1, const p
     point3 c = v0;
     point3 d = p0;
 
-    glColor3f (1.0, 1.0, 1.0);
-    glBegin(GL_LINES);
     for(float i=1; i<=resolution; i++){
         point3 pU0 = a*((i-1)/resolution)*((i-1)/resolution)*((i-1)/resolution) +
                 b*((i-1)/resolution)*((i-1)/resolution) +
@@ -195,5 +247,4 @@ float WindowBernsteinDouble::hermite(const point3 &p0, const point3 &p1, const p
         glVertex3f(pU0.x, pU0.y, pU0.z);
         glVertex3f(pU1.x, pU1.y, pU1.z);
     }
-    glEnd();
 }

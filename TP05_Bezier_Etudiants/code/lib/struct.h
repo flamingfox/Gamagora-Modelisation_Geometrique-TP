@@ -67,6 +67,8 @@ public:
 	float		norme();
 	point3&		normalize();
 
+    float dotProduct(const point3& vec2) const;
+
 };
 
 #endif // POINT3_H
