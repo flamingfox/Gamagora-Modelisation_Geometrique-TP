@@ -35,6 +35,7 @@ float tz=0.0;
 void createCylindre(const point3& centre, const float& hauteur, const float& rayon, const int& nbMedi = 10);
 void createSphere(const point3& centre, const float& rayon, const int& nbMedi, const int& nbAlti);
 void createCone(const float& rayon, const float& longueur, const float& ratioTronque, const int& nbMedi);
+void createSphereTronquer(const point3& centre, const float& rayon, const int& nbMedi, const int& nbAlti, const float& angleOuverture);
 
 /* initialisation d'OpenGL*/
 static void init()
@@ -76,12 +77,18 @@ void display(void)
 	tab[0]=p1;
 	tab[1]=p2;
 
-	//createCylindre(point3(0,0,0), 10, 5);
+	// 0 = cylindre; 1 = sphère, 2 = cone
+#define sequence 3
 
-	//createSphere(point3(0,0,0), 5, 16, 16);
-
+#if(sequence == 0)
+	createCylindre(point3(0,0,0), 10, 5);
+#elif(sequence == 1)
+	createSphere(point3(0,0,0), 5, 16, 16);
+#elif(sequence == 2)
 	createCone(5.0, 10.0, 0.5, 6);
-
+#elif(sequence == 3)
+	createSphereTronquer(point3(0,0,0), 10, 16, 16, 45);
+#endif
 	glPopMatrix();			
 
 
@@ -198,8 +205,9 @@ void createCylindre(const point3& centre, const float& hauteur, const float& ray
 	point3 pCentreHaut(centre.x, centre.y, centre.z + hauteur/2);
 
 	glColor3f(0.8,0.3,0.3);
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < nbMedi; i++){
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(pCentreBas.x, pCentreBas.y, pCentreBas.z);
+	for(int i = 0; i <= nbMedi; i++){
 		glVertex3f(pCentreBas.x + rayon*cos( i*2*M_PI/nbMedi ),
 			pCentreBas.y+ rayon*sin(i*2*M_PI/nbMedi ),
 			pCentreBas.z);
@@ -208,8 +216,9 @@ void createCylindre(const point3& centre, const float& hauteur, const float& ray
 
 
 	glColor3f(0.3,0.3,0.8);
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < nbMedi; i++){
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(pCentreHaut.x, pCentreHaut.y, pCentreHaut.z);
+	for(int i = 0; i <= nbMedi; i++){
 		glVertex3f(pCentreHaut.x+ rayon*cos( i*2*M_PI/nbMedi ),
 			pCentreHaut.y+ rayon*sin(i*2*M_PI/nbMedi ),
 			pCentreHaut.z);
@@ -217,7 +226,7 @@ void createCylindre(const point3& centre, const float& hauteur, const float& ray
 	glEnd();
 
 	glColor3f(0.7,0.7,0.7);
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLES);
 	for(int i = 0; i < nbMedi; i++){
 
 		glVertex3f(pCentreBas.x + rayon*cos( i*2*M_PI/nbMedi ),
@@ -228,12 +237,20 @@ void createCylindre(const point3& centre, const float& hauteur, const float& ray
 			pCentreBas.y+ rayon*sin( ((i+1)%nbMedi) *2*M_PI/nbMedi ),
 			pCentreBas.z);
 
-		glVertex3f(pCentreHaut.x+ rayon*cos( ( (i+1)%nbMedi )*2*M_PI/nbMedi ),
-			pCentreHaut.y+ rayon*sin( ( (i+1)%nbMedi ) *2*M_PI/nbMedi ),
+		glVertex3f(pCentreHaut.x+ rayon*cos( i*2*M_PI/nbMedi ),
+			pCentreHaut.y+ rayon*sin( i *2*M_PI/nbMedi ),
 			pCentreHaut.z);
 
 		glVertex3f(pCentreHaut.x+ rayon*cos( i*2*M_PI/nbMedi ),
 			pCentreHaut.y+ rayon*sin( i *2*M_PI/nbMedi ),
+			pCentreHaut.z);
+
+		glVertex3f(pCentreBas.x + rayon*cos( ((i+1)%nbMedi) *2*M_PI/nbMedi ),
+			pCentreBas.y+ rayon*sin( ((i+1)%nbMedi) *2*M_PI/nbMedi ),
+			pCentreBas.z);
+
+		glVertex3f(pCentreHaut.x+ rayon*cos( ( (i+1)%nbMedi )*2*M_PI/nbMedi ),
+			pCentreHaut.y+ rayon*sin( ( (i+1)%nbMedi ) *2*M_PI/nbMedi ),
 			pCentreHaut.z);
 
 	}
@@ -256,7 +273,7 @@ void createSphere(const point3& centre, const float& rayon, const int& nbMedi, c
 #define deltaGama (float)(2*M_PI/nbMedi)
 
 	glColor3f(0.8,0.3,0.3);
-	glBegin(GL_TRIANGLES);
+	glBegin(GL_TRIANGLE_FAN);
 	glVertex3f(centre.x, centre.y, centre.z + rayon);
 	for(int i = 0; i < nbMedi; i++){
 
@@ -287,7 +304,7 @@ void createSphere(const point3& centre, const float& rayon, const int& nbMedi, c
 	glEnd();
 
 	glColor3f(0.7,0.7,0.7);
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLES);
 	for(int j = 1; j < divSphereAlti-1; j++){
 		for(int i = 0; i < nbMedi; i++){
 
@@ -299,12 +316,20 @@ void createSphere(const point3& centre, const float& rayon, const int& nbMedi, c
 				centre.y+ rayon*sin( j * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
 				centre.z + rayon*cos( j * deltaPhi));
 
-			glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
-				centre.y+ rayon*sin( (j+1) * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
+			glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( i*deltaGama ),
+				centre.y+ rayon*sin( (j+1) * deltaPhi) * sin(i*deltaGama),
 				centre.z + rayon*cos( (j+1) * deltaPhi));
 
 			glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( i*deltaGama ),
 				centre.y+ rayon*sin( (j+1) * deltaPhi) * sin(i*deltaGama),
+				centre.z + rayon*cos( (j+1) * deltaPhi));
+
+			glVertex3f(centre.x + rayon*sin( j * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
+				centre.y+ rayon*sin( j * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
+				centre.z + rayon*cos( j * deltaPhi));
+
+			glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
+				centre.y+ rayon*sin( (j+1) * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
 				centre.z + rayon*cos( (j+1) * deltaPhi));
 
 		}
@@ -318,11 +343,12 @@ void createCone(const float& rayon, const float& longueur, const float& ratioTro
 #define deltaGama (float)(2*M_PI/nbMedi)
 
 	glColor3f(0.8,0.3,0.3);
-	glBegin(GL_POLYGON);
-	for(int i = 0; i < nbMedi; i++){
-		glVertex3f(rayon*cos( i*deltaGama ),
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(0, longueur,	0);
+	for(int i = 0; i <= nbMedi; i++){
+		glVertex3f(rayon*cos( (i%nbMedi)*deltaGama ),
 			longueur,
-			rayon*sin(i*deltaGama ));
+			rayon*sin((i%nbMedi)*deltaGama));
 	}
 	glEnd();
 
@@ -332,7 +358,6 @@ void createCone(const float& rayon, const float& longueur, const float& ratioTro
 		glBegin(GL_TRIANGLE_FAN);
 		glVertex3f(0, 0, 0);
 		for(int i = 0; i <= nbMedi; i++){
-
 			glVertex3f(rayon*cos( (i%nbMedi)*deltaGama ),
 				longueur,
 				rayon*sin((i%nbMedi)*deltaGama));
@@ -343,35 +368,170 @@ void createCone(const float& rayon, const float& longueur, const float& ratioTro
 	else if(ratioTronque > 0.0){
 
 		glColor3f(0.8,0.8,0.8);
-		glBegin(GL_QUADS);
+		glBegin(GL_TRIANGLES);
 		for(int i = 0; i < nbMedi; i++){
 
 			glVertex3f( (1-ratioTronque)*rayon *cos( i*deltaGama ),
 				(1-ratioTronque)*longueur,
 				(1-ratioTronque)*rayon *sin( i*deltaGama) );
 
+			glVertex3f( (1-ratioTronque)*rayon *cos( ((i+1)%nbMedi)*deltaGama ),
+				(1-ratioTronque)*longueur,
+				(1-ratioTronque)*rayon *sin(((i+1)%nbMedi)*deltaGama));
+
 			glVertex3f( rayon *cos( i*deltaGama ),
 				longueur,
 				rayon *sin( i*deltaGama) );
 
-			glVertex3f( rayon *cos( ((i+1)%nbMedi)*deltaGama ),
+			glVertex3f( rayon *cos( i*deltaGama ),
 				longueur,
-				rayon *sin( ((i+1)%nbMedi)*deltaGama));
+				rayon *sin( i*deltaGama) );
 
 			glVertex3f( (1-ratioTronque)*rayon *cos( ((i+1)%nbMedi)*deltaGama ),
 				(1-ratioTronque)*longueur,
 				(1-ratioTronque)*rayon *sin(((i+1)%nbMedi)*deltaGama));
+
+			glVertex3f( rayon *cos( ((i+1)%nbMedi)*deltaGama ),
+				longueur,
+				rayon *sin( ((i+1)%nbMedi)*deltaGama));
 		}
 		glEnd();
 
 		glColor3f(0.3,0.3,0.8);
-		glBegin(GL_POLYGON);
-		for(int i = 0; i < nbMedi; i++){
-			glVertex3f( (1-ratioTronque)*rayon *cos( i*deltaGama ),
+		glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(0, (1-ratioTronque)*longueur, 0);
+		for(int i = 0; i <= nbMedi; i++){
+			glVertex3f( (1-ratioTronque)*rayon *cos( (i%nbMedi)*deltaGama ),
 				(1-ratioTronque)*longueur,
-				(1-ratioTronque)*rayon *sin(i*deltaGama ));
+				(1-ratioTronque)*rayon *sin((i%nbMedi)*deltaGama ));
 		}
 		glEnd();
 
 	}
+}
+
+void createSphereTronquer(const point3& centre, const float& rayon, const int& nbMedi, const int& nbAlti, const float& angleOuverture){
+
+	/*
+	x = r*sin(phi)*cos(gama);
+	y = r*sin(phi)*sin(gama);
+	z = r*cos(phi);
+
+	*/
+
+	float divSphereAlti = nbAlti+1;
+	float angleInterdit = angleOuverture;
+
+	while(angleInterdit > 360)
+		angleInterdit -= 360;
+
+	angleInterdit *= (2*M_PI/360);
+
+#define deltaPhi (float)(M_PI/divSphereAlti)
+#define deltaGama (float)(2*M_PI/nbMedi)
+
+	glColor3f(0.8,0.3,0.3);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(centre.x, centre.y, centre.z + rayon);
+	for(int i = 0; i < nbMedi; i++){
+
+		if( i*deltaGama >= angleInterdit ){
+			glVertex3f(centre.x + rayon*cos( i*deltaGama )*sin(deltaPhi),
+				centre.y+ rayon*sin(i*deltaGama)*sin(deltaPhi),
+				centre.z + rayon*cos(deltaPhi));
+		}
+	}
+
+	glVertex3f(centre.x + rayon*sin(deltaPhi),
+		centre.y,
+		centre.z + rayon*cos(deltaPhi));
+	glEnd();
+
+
+	glColor3f(0.3,0.3,0.8);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(centre.x, centre.y, centre.z - rayon);
+	for(int i = 0; i < nbMedi; i++){
+
+		if( i*deltaGama >= angleInterdit ){
+			glVertex3f(centre.x + rayon*cos( i*deltaGama )*sin( (divSphereAlti-1) * deltaPhi),
+				centre.y+ rayon*sin(i*deltaGama)*sin( (divSphereAlti-1) * deltaPhi),
+				centre.z + rayon*cos( (divSphereAlti-1) * deltaPhi));
+		}
+	}
+
+	glVertex3f(centre.x + rayon*sin(deltaPhi),
+		centre.y,
+		centre.z + rayon*cos( (divSphereAlti-1) * deltaPhi));
+	glEnd();
+
+	glColor3f(0.7,0.7,0.7);
+	glBegin(GL_TRIANGLES);
+
+	int iMaxInterdit = -1;
+	for(int j = 1; j < divSphereAlti-1; j++){
+		for(int i = 0; i < nbMedi; i++){
+
+			//if(i*deltaGama < -angleInterdit || i*deltaGama > +angleInterdit ){
+			if( i*deltaGama >= angleInterdit ){
+
+				glVertex3f(centre.x + rayon*sin( j* deltaPhi) * cos( i*deltaGama ),
+					centre.y+ rayon*sin( j * deltaPhi) * sin(i*deltaGama),
+					centre.z + rayon*cos( j * deltaPhi));
+
+				glVertex3f(centre.x + rayon*sin( j * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
+					centre.y+ rayon*sin( j * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
+					centre.z + rayon*cos( j * deltaPhi));
+
+				glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( i*deltaGama ),
+					centre.y+ rayon*sin( (j+1) * deltaPhi) * sin(i*deltaGama),
+					centre.z + rayon*cos( (j+1) * deltaPhi));
+
+				glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( i*deltaGama ),
+					centre.y+ rayon*sin( (j+1) * deltaPhi) * sin(i*deltaGama),
+					centre.z + rayon*cos( (j+1) * deltaPhi));
+
+				glVertex3f(centre.x + rayon*sin( j * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
+					centre.y+ rayon*sin( j * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
+					centre.z + rayon*cos( j * deltaPhi));
+
+				glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( ((i+1)%nbMedi) *deltaGama ),
+					centre.y+ rayon*sin( (j+1) * deltaPhi) * sin( ((i+1)%nbMedi) *deltaGama),
+					centre.z + rayon*cos( (j+1) * deltaPhi));
+
+			}
+			else{
+				iMaxInterdit = i+1;
+			}
+		}
+	}
+	glEnd();
+
+	glColor3f(0.0,0.7,0.7);
+	glBegin(GL_TRIANGLES);
+	for(int j = 0; j < divSphereAlti; j++){
+
+		//i = 0;
+		glVertex3f(centre.x, centre.y, centre.z);
+		glVertex3f(centre.x + rayon*sin( j* deltaPhi ),
+			centre.y,
+			centre.z + rayon*cos( j * deltaPhi ));
+
+		glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi),
+			centre.y,
+			centre.z + rayon*cos( (j+1) * deltaPhi));
+
+		
+		glVertex3f(centre.x, centre.y, centre.z);
+		glVertex3f(centre.x + rayon*sin( j* deltaPhi ) * cos( iMaxInterdit*deltaGama ),
+			centre.y+ rayon*sin( j * deltaPhi) * sin( iMaxInterdit*deltaGama ),
+			centre.z + rayon*cos( j * deltaPhi ));
+
+		glVertex3f(centre.x + rayon*sin( (j+1) * deltaPhi) * cos( iMaxInterdit*deltaGama ),
+			centre.y+ rayon*sin( (j+1) * deltaPhi) * sin( iMaxInterdit*deltaGama),
+			centre.z + rayon*cos( (j+1) * deltaPhi));
+			
+	}
+	glEnd();
+
 }
