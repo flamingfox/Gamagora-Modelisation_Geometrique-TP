@@ -22,11 +22,13 @@ SOURCES += main.cpp\
     lib/struct.cpp \
     windowHermite.cpp \
     windowBernsteinSimple.cpp \
-    windowBernsteinDouble.cpp
+    windowBernsteinDouble.cpp \
+    courbebezier.cpp
 
 HEADERS  += \    
     lib/myglwidget.h \
     lib/struct.h \
     windowHermite.h \
     windowBernsteinSimple.h \
-    windowBernsteinDouble.h
+    windowBernsteinDouble.h \
+    courbebezier.h

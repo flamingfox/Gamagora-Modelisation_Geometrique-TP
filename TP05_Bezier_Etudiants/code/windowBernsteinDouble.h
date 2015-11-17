@@ -19,17 +19,15 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lib/struct.h"
+#include "courbebezier.h"
 
 class WindowBernsteinDouble : public myGLWidget
 {
 
     #define nbPointControle 4
     // Tableau des points de contrôles en global ...
-    point3 Courbe1[nbPointControle];
-    point3 Courbe2[nbPointControle];
-    // Ordre de la courbre  : Ordre
-    // Degré de la courbe = Ordre - 1
-    int Ordre = nbPointControle;
+    CourbeBezier Courbe1;
+    CourbeBezier Courbe2;
 
     // Point de controle selectionné
     int numPoint = 0;
@@ -44,14 +42,8 @@ public:
     void keyPressEvent( QKeyEvent *keyEvent );
 
 private:
-
-    point3 Bezier(point3 Courbe[], const int &nbPoint, const float& u);
-    void C0DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2);
-    void C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2);
-
-    // Fonction Factorielle
-    float fact(int n);
-    float Bernstein(int i, int n, float t);
+    void C0DoubleBezier(CourbeBezier Courbe1, CourbeBezier Courbe2);
+    void C1DoubleBezier(CourbeBezier Courbe1, CourbeBezier Courbe2);
 
     float hermite(const point3& p0, const point3& p1, const point3& v0, const point3& v1, const int &resolution);
 };

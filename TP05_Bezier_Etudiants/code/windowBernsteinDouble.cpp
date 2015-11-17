@@ -17,22 +17,22 @@ void WindowBernsteinDouble::initializeGL()
     }*/
 
 
-    Courbe1[0] = point3(-2,-2,0);
-    Courbe1[1] = point3(-1,1,0);
-    Courbe1[2] = point3(1,1,0);
-    Courbe1[3] = point3(2,-2,0);
+    Courbe1.addPoint( point3(-2,-2,0) );
+    Courbe1.addPoint( point3(-1,1,0) );
+    Courbe1.addPoint( point3(1,1,0) );
+    Courbe1.addPoint( point3(2,-2,0) );
 
-    Courbe2[0] = point3(2,-2,0);
-    Courbe2[1] = point3(3,1,0);
-    Courbe2[2] = point3(5,1,0);
-    Courbe2[3] = point3(6,-2,0);
+    Courbe2.addPoint( point3(2,-2,0) );
+    Courbe2.addPoint( point3(3,1,0) );
+    Courbe2.addPoint( point3(5,1,0) );
+    Courbe2.addPoint( point3(6,-2,0) );
 }
 
 void WindowBernsteinDouble::keyPressEvent(QKeyEvent *keyEvent)
 {
     switch (keyEvent->key()) {
     case '+':
-        if (numPoint < Ordre-1)
+        if (numPoint < Courbe1.getDegree())
             numPoint = numPoint + 1;
         else
             numPoint = 0;
@@ -41,7 +41,7 @@ void WindowBernsteinDouble::keyPressEvent(QKeyEvent *keyEvent)
         if (numPoint > 0)
             numPoint = numPoint - 1;
         else
-            numPoint = Ordre-1;
+            numPoint = Courbe1.getDegree();
         break;
 
     case Qt::Key_D :
@@ -88,7 +88,7 @@ void WindowBernsteinDouble::paintGL()
     // Enveloppe des points de controles
     glColor3f (1.0, 0.0, 0.0);
     glBegin(GL_LINE_STRIP);
-    for (int i =0; i < Ordre; i++)
+    for (int i =0; i < Courbe1.getOrdre(); i++)
     {
         glVertex3f(Courbe1[i].x, Courbe1[i].y, Courbe1[i].z);
     }
@@ -96,7 +96,7 @@ void WindowBernsteinDouble::paintGL()
 
     glColor3f (1.0, 0.0, 0.0);
     glBegin(GL_LINE_STRIP);
-    for (int i =0; i < Ordre; i++)
+    for (int i =0; i < Courbe2.getOrdre(); i++)
     {
         glVertex3f(Courbe2[i].x, Courbe2[i].y, Courbe2[i].z);
     }
@@ -118,86 +118,69 @@ void WindowBernsteinDouble::paintGL()
     // Dessiner ici la courbe de Bézier.
     // Vous devez avoir implémenté Bernstein précédemment.
 
-    //C0DoubleBezier(Courbe1, Courbe2, nbPointControle, nbPointControle);
-    C1DoubleBezier(Courbe1, Courbe2, nbPointControle, nbPointControle);
+    //C0DoubleBezier(Courbe1, Courbe2);
+    C1DoubleBezier(Courbe1, Courbe2);
 
     glFlush();
 }
 
-point3 WindowBernsteinDouble::Bezier(point3 Courbe[], const int &nbPoint, const float& u)
-{    
-    point3 pU;
-    for(int j=0; j< nbPoint; j++){
-        pU = pU + Courbe[j]*Bernstein(j, nbPoint-1, u);
-    }
-
-    return pU;
-}
-
-void WindowBernsteinDouble::C0DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2)
+void WindowBernsteinDouble::C0DoubleBezier(CourbeBezier Courbe1, CourbeBezier Courbe2)
 {
     glColor3f (0.0, 1.0, 1.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Bezier(Courbe1, nbPoint1, i/resolution );
+        point3 pU = Courbe1.calculPu( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
 
     glColor3f (1.0, 1.0, 1.0);
     glBegin(GL_LINE_STRIP);
-    if( Courbe1[nbPoint1-1].x != Courbe2[0].x || Courbe1[nbPoint1-1].y != Courbe2[0].y || Courbe1[nbPoint1-1].z != Courbe2[0].z ){
+    if( Courbe1[Courbe1.getOrdre()-1].x != Courbe2[0].x || Courbe1[Courbe1.getOrdre()-1].y != Courbe2[0].y || Courbe1[Courbe1.getOrdre()-1].z != Courbe2[0].z ){
 
-        point3 v0 = Courbe1[nbPoint1-1] - Courbe1[nbPoint1-2];
+        point3 v0 = Courbe1[Courbe1.getOrdre()-1] - Courbe1[Courbe1.getOrdre()-2];
         point3 v1 = Courbe2[1] - Courbe2[0];
 
-        hermite(Courbe1[nbPoint1-1], Courbe2[0], v0, v1, resolution);
+        hermite(Courbe1[Courbe1.getOrdre()-1], Courbe2[0], v0, v1, resolution);
     }
     glEnd();
 
     glColor3f (1.0, 1.0, 0.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Bezier(Courbe2, nbPoint2, i/resolution );
+        point3 pU = Courbe2.calculPu( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
 
 }
 
-void WindowBernsteinDouble::C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], const int &nbPoint1, const int &nbPoint2)
+void WindowBernsteinDouble::C1DoubleBezier(CourbeBezier Courbe1, CourbeBezier Courbe2)
 {
-    point3 tangente = Courbe2[1] - Courbe1[nbPoint1-2];
+    point3 tangente = Courbe2[1] - Courbe1[Courbe1.getOrdre()-2];
     tangente = tangente.normalize();
 
-    float dCourbe1 = (Courbe1[nbPoint1-2] - Courbe1[nbPoint1-1]).dotProduct(tangente);
+    float dCourbe1 = (Courbe1[Courbe1.getOrdre()-2] - Courbe1[Courbe1.getOrdre()-1]).dotProduct(tangente);
     float dCourbe2 = (Courbe2[1] - Courbe2[0]).dotProduct(tangente);
 
-    point3 Courbe1bis[nbPoint1];
-    for(int i=0; i<nbPoint1; i++){
-        Courbe1bis[i] = Courbe1[i];
-    }
+    CourbeBezier Courbe1bis(Courbe1);
+    CourbeBezier Courbe2bis(Courbe2);
 
-    point3 Courbe2bis[nbPoint2];
-    for(int i=0; i<nbPoint2; i++){
-        Courbe2bis[i] = Courbe2[i];
-    }
-
-    Courbe1bis[nbPoint1-2] = Courbe1[nbPoint1] + tangente*dCourbe1;
+    Courbe1bis[Courbe1.getOrdre()-2] = Courbe1[Courbe1.getOrdre()-1] + tangente*dCourbe1;
     Courbe2bis[1] = Courbe2[0] + tangente*dCourbe2;
 
     glColor3f (0.0, 1.0, 1.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Bezier(Courbe1bis, nbPoint1, i/resolution );
+        point3 pU = Courbe1bis.calculPu( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
 
     glColor3f (1.0, 1.0, 0.0);
     glBegin(GL_LINE_STRIP);
-    for(float i=0; i<=resolution-1; i++){
-        point3 pU = Bezier(Courbe2bis, nbPoint2, i/resolution );
+    for(float i=0; i<=resolution; i++){
+        point3 pU = Courbe2bis.calculPu( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
@@ -205,27 +188,13 @@ void WindowBernsteinDouble::C1DoubleBezier(point3 Courbe1[], point3 Courbe2[], c
     glColor3f (1.0, 0.0, 1.0);
     glBegin(GL_LINES);
 
-    glVertex3f(Courbe1bis[nbPoint1-1].x, Courbe1bis[nbPoint1-1].y, Courbe1bis[nbPoint1-1].z);
-    glVertex3f(Courbe1bis[nbPoint1-2].x, Courbe1bis[nbPoint1-2].y, Courbe1bis[nbPoint1-2].z);
+    glVertex3f(Courbe1bis[Courbe1bis.getOrdre()-1].x, Courbe1bis[Courbe1bis.getOrdre()-1].y, Courbe1bis[Courbe1bis.getOrdre()-1].z);
+    glVertex3f(Courbe1bis[Courbe1bis.getOrdre()-2].x, Courbe1bis[Courbe1bis.getOrdre()-2].y, Courbe1bis[Courbe1bis.getOrdre()-2].z);
 
     glVertex3f(Courbe2bis[0].x, Courbe2bis[0].y, Courbe2bis[0].z);
     glVertex3f(Courbe2bis[1].x, Courbe2bis[1].y, Courbe2bis[1].z);
 
     glEnd();
-}
-
-float WindowBernsteinDouble::fact(const int n)
-{
-    float retour = 1;
-    for(int i=n; i>0; i--){
-        retour *= i;
-    }
-    return retour;
-}
-
-float WindowBernsteinDouble::Bernstein(int i, int n, float t)
-{
-    return fact(n) / (fact(i)*fact(n-i)) * powf(t, i) * powf(1-t, n-i);
 }
 
 float WindowBernsteinDouble::hermite(const point3 &p0, const point3 &p1, const point3 &v0, const point3 &v1, const int &resolution)

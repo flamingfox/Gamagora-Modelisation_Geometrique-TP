@@ -19,17 +19,12 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lib/struct.h"
+#include "courbebezier.h"
 
 class WindowBernsteinSimple : public myGLWidget
 {
 
-    #define nbPointControle 4
-    // Tableau des points de contrôles en global ...
-    point3 TabPC[nbPointControle];
-    // Ordre de la courbre  : Ordre
-    // Degré de la courbe = Ordre - 1
-    int Ordre = nbPointControle;
-
+    CourbeBezier cb;
     // Point de controle selectionné
     int numPoint = 0;
 
@@ -41,12 +36,6 @@ public:
     void resizeGL(int width, int height);
     void paintGL();
     void keyPressEvent( QKeyEvent *keyEvent );
-
-private:
-
-    // Fonction Factorielle
-    float fact(int n);
-    float Bernstein(int i, int n, float t);
 };
 
 #endif // WINDOWBERNSTEINSIMPLE_H

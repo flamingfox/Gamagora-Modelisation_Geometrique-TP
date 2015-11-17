@@ -17,17 +17,17 @@ void WindowBernsteinSimple::initializeGL()
     }*/
 
 
-    TabPC[0] = point3(-2,-2,0);
-    TabPC[1] = point3(-1,1,0);
-    TabPC[2] = point3(1,1,0);
-    TabPC[3] = point3(2,-2,0);
+    cb.addPoint( point3(-2,-2,0) );
+    cb.addPoint( point3(-1,1,0) );
+    cb.addPoint( point3(1,1,0) );
+    cb.addPoint( point3(2,-2,0) );
 }
 
 void WindowBernsteinSimple::keyPressEvent(QKeyEvent *keyEvent)
 {
     switch (keyEvent->key()) {
     case '+':
-        if (numPoint < Ordre-1)
+        if (numPoint < cb.getDegree())
             numPoint = numPoint + 1;
         else
             numPoint = 0;
@@ -36,24 +36,24 @@ void WindowBernsteinSimple::keyPressEvent(QKeyEvent *keyEvent)
         if (numPoint > 0)
             numPoint = numPoint - 1;
         else
-            numPoint = Ordre-1;
+            numPoint = cb.getDegree();
         break;
 
     case Qt::Key_D :
-        TabPC[numPoint].x += 0.1;
-        TabPC[numPoint].y += 0;
+        cb[numPoint].x += 0.1;
+        cb[numPoint].y += 0;
         break;
     case Qt::Key_Q:
-        TabPC[numPoint].x -= 0.1;
-        TabPC[numPoint].y += 0;
+        cb[numPoint].x -= 0.1;
+        cb[numPoint].y += 0;
         break;
     case Qt::Key_Z:
-        TabPC[numPoint].x += 0;
-        TabPC[numPoint].y += 0.1;
+        cb[numPoint].x += 0;
+        cb[numPoint].y += 0.1;
         break;
     case Qt::Key_S:
-        TabPC[numPoint].x += 0;
-        TabPC[numPoint].y -= 0.1;
+        cb[numPoint].x += 0;
+        cb[numPoint].y -= 0.1;
         break;
     case Qt::Key_Escape:
         exit(0);
@@ -83,9 +83,9 @@ void WindowBernsteinSimple::paintGL()
     // Enveloppe des points de controles
     glColor3f (1.0, 0.0, 0.0);
     glBegin(GL_LINE_STRIP);
-    for (int i =0; i < Ordre; i++)
+    for (int i =0; i < cb.getOrdre(); i++)
     {
-        glVertex3f(TabPC[i].x, TabPC[i].y, TabPC[i].z);
+        glVertex3f(cb[i].x, cb[i].y, cb[i].z);
     }
     glEnd();
 
@@ -96,10 +96,10 @@ void WindowBernsteinSimple::paintGL()
     // ° d'un point de contrôle au précédent (-)
     glColor3f (0.0, 0.0, 1.0);
     glBegin(GL_LINE_LOOP);
-    glVertex3f(TabPC[numPoint].x+0.1, TabPC[numPoint].y+0.1, TabPC[numPoint].z);
-    glVertex3f(TabPC[numPoint].x+0.1, TabPC[numPoint].y-0.1, TabPC[numPoint].z);
-    glVertex3f(TabPC[numPoint].x-0.1, TabPC[numPoint].y-0.1, TabPC[numPoint].z);
-    glVertex3f(TabPC[numPoint].x-0.1, TabPC[numPoint].y+0.1, TabPC[numPoint].z);
+    glVertex3f(cb[numPoint].x+0.1, cb[numPoint].y+0.1, cb[numPoint].z);
+    glVertex3f(cb[numPoint].x+0.1, cb[numPoint].y-0.1, cb[numPoint].z);
+    glVertex3f(cb[numPoint].x-0.1, cb[numPoint].y-0.1, cb[numPoint].z);
+    glVertex3f(cb[numPoint].x-0.1, cb[numPoint].y+0.1, cb[numPoint].z);
     glEnd();
 
     // Dessiner ici la courbe de Bézier.
@@ -108,28 +108,10 @@ void WindowBernsteinSimple::paintGL()
     glBegin(GL_LINE_STRIP);
 
     for(float i=0; i<=resolution; i++){
-        point3 pU;
-
-        for(int j=0; j< nbPointControle; j++){
-            pU = pU + TabPC[j]*Bernstein(j, nbPointControle-1, i/resolution);
-        }
+        point3 pU = cb.calculPu(i/resolution);
         glVertex3f(pU.x, pU.y, pU.z);
     }
 
     glEnd();
     glFlush();
-}
-
-float WindowBernsteinSimple::fact(const int n)
-{
-    float retour = 1;
-    for(int i=n; i>0; i--){
-        retour *= i;
-    }
-    return retour;
-}
-
-float WindowBernsteinSimple::Bernstein(int i, int n, float t)
-{
-    return fact(n) / (fact(i)*fact(n-i)) * powf(t, i) * powf(1-t, n-i);
 }
