@@ -21,10 +21,12 @@ SOURCES += main.cpp\
     lib/myglwidget.cpp \
     lib/struct.cpp \
     windowSurfaceReglee.cpp \
-    courbebezier.cpp
+    courbebezier.cpp \
+    surfacereglee.cpp
 
 HEADERS  += \
     lib/myglwidget.h \
     lib/struct.h \
     windowSurfaceReglee.h \
-    courbebezier.h
+    courbebezier.h \
+    surfacereglee.h

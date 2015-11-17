@@ -1,0 +1,31 @@
+#include "courbereglee.h"
+
+void SurfaceReglee::addPointForme(const point3 &point)
+{
+    courbeForme.addPoint(point);
+}
+
+void SurfaceReglee::addPointPorteuse(const point3 &point)
+{
+    courbePorteuse.addPoint(point);
+}
+
+unsigned int SurfaceReglee::getOrdreForme() const
+{
+    return courbeForme.getOrdre();
+}
+
+unsigned int SurfaceReglee::getDegreeForme() const
+{
+    return courbeForme.getDegree();
+}
+
+unsigned int SurfaceReglee::getOrdrePorteuse() const
+{
+    return courbePorteuse.getOrdre();
+}
+
+unsigned int SurfaceReglee::getDegreePorteuse() const
+{
+    return courbePorteuse.getDegree();
+}

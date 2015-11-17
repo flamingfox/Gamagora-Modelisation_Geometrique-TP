@@ -19,16 +19,14 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lib/struct.h"
-#include "courbebezier.h"
+#include "surfacereglee.h"
 
 class windowSurfaceReglee : public myGLWidget
 {
-    CourbeBezier cb;
-    // Point de controle selectionné
-    int numPoint = 0;
+    SurfaceReglee sr;
 
 public:
-    unsigned int resolution = 10;
+    unsigned int resolutionForme = 10, resolutionPorteuse = 10;
 
     explicit windowSurfaceReglee(QWidget *parent = 0);
     void initializeGL();

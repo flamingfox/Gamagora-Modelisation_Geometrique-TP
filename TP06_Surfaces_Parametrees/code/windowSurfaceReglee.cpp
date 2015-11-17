@@ -1,7 +1,7 @@
 #include "windowSurfaceReglee.h"
 
 windowSurfaceReglee::windowSurfaceReglee(QWidget *parent)
-    : myGLWidget(60, parent, "Courbe de Bezier (Bernstein simple)")
+    : myGLWidget(60, parent, "Surface réglée")
 {
 }
 
@@ -13,48 +13,34 @@ void windowSurfaceReglee::initializeGL()
     // On choisit de les intialiser selon une ligne
     /*for (int i = 0; i < Ordre; i++)
     {
-        cb[i] = point3(i,i,i);
+        courbe1[i] = point3(i,i,i);
     }*/
 
 
-    cb.addPoint( point3(-2,-2,0) );
-    cb.addPoint( point3(-1,1,0) );
-    cb.addPoint( point3(1,1,0) );
-    cb.addPoint( point3(2,-2,0) );
+    /*
+    sr.addPointForme( point3(-2,-2,0) );
+    sr.addPointForme( point3(-1,1,0) );
+    sr.addPointForme( point3(1,1,0) );
+    sr.addPointForme( point3(2,-2,0) );
+    */
+
+    sr.addPointForme( point3(0,0,0) );
+    sr.addPointForme( point3(1,1,0) );
+    sr.addPointForme( point3(1,-3,0) );
+    sr.addPointForme( point3(-1,-3,0) );
+    sr.addPointForme( point3(-1,1,0) );
+    sr.addPointForme( point3(0,0,0) );
+
+    sr.addPointPorteuse( point3(0,2,-4) );
+    sr.addPointPorteuse( point3(-1,1,-3) );
+    sr.addPointPorteuse( point3(0,0,-2) );
+    sr.addPointPorteuse( point3(1,-1,-1) );
+    sr.addPointPorteuse( point3(0,-2,0) );
 }
 
 void windowSurfaceReglee::keyPressEvent(QKeyEvent *keyEvent)
 {
     switch (keyEvent->key()) {
-    case '+':
-        if (numPoint < cb.getDegree())
-            numPoint = numPoint + 1;
-        else
-            numPoint = 0;
-        break;
-    case '-':
-        if (numPoint > 0)
-            numPoint = numPoint - 1;
-        else
-            numPoint = cb.getDegree();
-        break;
-
-    case Qt::Key_D :
-        cb[numPoint].x += 0.1;
-        cb[numPoint].y += 0;
-        break;
-    case Qt::Key_Q:
-        cb[numPoint].x -= 0.1;
-        cb[numPoint].y += 0;
-        break;
-    case Qt::Key_Z:
-        cb[numPoint].x += 0;
-        cb[numPoint].y += 0.1;
-        break;
-    case Qt::Key_S:
-        cb[numPoint].x += 0;
-        cb[numPoint].y -= 0.1;
-        break;
     case Qt::Key_Escape:
         exit(0);
         break;
@@ -68,6 +54,7 @@ void windowSurfaceReglee::resizeGL(int width, int height)
     if(height == 0)
         height = 1;
     glViewport(0, 0, width, height);
+    //glEnable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-5, 5, -5, 5, -5, 5);
@@ -80,38 +67,65 @@ void windowSurfaceReglee::paintGL()
 
     glLoadIdentity();
 
-    // Enveloppe des points de controles
-    glColor3f (1.0, 0.0, 0.0);
-    glBegin(GL_LINE_STRIP);
-    for (int i =0; i < cb.getOrdre(); i++)
-    {
-        glVertex3f(cb[i].x, cb[i].y, cb[i].z);
-    }
-    glEnd();
-
-
-    // Affichage du point de controle courant
-    // On se déplace ensuite avec + et -
-    // ° d'un point de contrôle au suivant (+)
-    // ° d'un point de contrôle au précédent (-)
-    glColor3f (0.0, 0.0, 1.0);
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(cb[numPoint].x+0.1, cb[numPoint].y+0.1, cb[numPoint].z);
-    glVertex3f(cb[numPoint].x+0.1, cb[numPoint].y-0.1, cb[numPoint].z);
-    glVertex3f(cb[numPoint].x-0.1, cb[numPoint].y-0.1, cb[numPoint].z);
-    glVertex3f(cb[numPoint].x-0.1, cb[numPoint].y+0.1, cb[numPoint].z);
-    glEnd();
-
     // Dessiner ici la courbe de Bézier.
     // Vous devez avoir implémenté Bernstein précédemment.
-    glColor3f (1.0, 1.0, 1.0);
-    glBegin(GL_LINE_STRIP);
 
-    for(float i=0; i<=resolution; i++){
-        point3 pU = cb.calculPu(i/resolution);
-        glVertex3f(pU.x, pU.y, pU.z);
+    point3 pUor;
+    point3 pUtmp;
+
+    glColor3f (0.4, 8.0, 8.0);
+    glBegin(GL_TRIANGLES);
+
+    for(float j=0; j<=resolutionPorteuse; j++){
+        for(float i=0; i<=resolutionForme; i++){
+            if(i!=resolutionForme && j!=resolutionPorteuse){
+                pUtmp = sr.calculPu(i/resolutionForme, j/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+
+                pUtmp = sr.calculPu(i/resolutionForme, (j+1)/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+
+                pUtmp = sr.calculPu((i+1)/resolutionForme, j/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+            }
+
+            if(i!=0 && j!=0){
+                pUtmp = sr.calculPu((i-1)/resolutionForme, j/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+
+                pUtmp = sr.calculPu(i/resolutionForme, j/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+
+                pUtmp = sr.calculPu(i/resolutionForme, (j-1)/resolutionPorteuse);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+            }
+        }
+    }
+    glEnd();
+
+    glColor3f (0.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+
+    for(float j=0; j<=resolutionPorteuse; j++){
+        for(float i=0; i<=resolutionForme; i++){
+            pUor = sr.calculPu(i/resolutionForme, j/resolutionPorteuse);
+            if(i!=resolutionForme){
+                pUtmp = sr.calculPu((i+1)/resolutionForme, j/resolutionPorteuse);
+                glVertex3f(pUor.x, pUor.y, pUor.z);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+            }
+
+            /*
+            if(j!=resolutionPorteuse){
+                pUtmp = sr.calculPu(i/resolutionForme, (j+1)/resolutionPorteuse);
+                glVertex3f(pUor.x, pUor.y, pUor.z);
+                glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
+            }
+            */
+        }
     }
 
     glEnd();
+
     glFlush();
 }
