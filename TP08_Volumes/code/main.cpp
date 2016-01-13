@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-#define sequence 1
+#define sequence 2
 
 #if(sequence == 0)
     Sphere sph = Sphere(Vector3D(0,0,0), 1);
@@ -20,6 +20,12 @@ int main()
     list.push_back(Sphere(Vector3D(2,0,0), 1));
     Voxel vox = VoxelManager::VoxelSpheres(list, 20);
     ObjManager::voxelSave("test2.obj", vox);
+#elif(sequence == 2)
+    vector<Sphere> list;
+    list.push_back(Sphere(Vector3D(0,0,0), 1));
+    list.push_back(Sphere(Vector3D(1,0,0), 1));
+    Voxel vox = VoxelManager::VoxelSpheresIntersection(list, 20);
+    ObjManager::voxelSave("test3.obj", vox);
 #endif
 
     return 0;
