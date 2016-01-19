@@ -20,7 +20,8 @@ public:
     unsigned int getOrdre();
     unsigned int getDegree();
 
-    point3 calculPu(const float& progressionCourbe);
+    point3 calculPuBernstein(const float& progressionCourbe);
+    point3 calculPuCastlejau(const float& progressionCourbe);
 
     point3 &operator[] (unsigned int i);
     point3 operator[] (unsigned int i) const;
@@ -29,6 +30,8 @@ private:
     // Fonction Factorielle
     float fact(int n);
     float Bernstein(int i, int n, float t);
+
+    point3 castlejau(std::vector<point3> &pointI, float u);
 };
 
 #endif // COURBEBEZIER_H

@@ -1,11 +1,11 @@
-#include "windowBernsteinSimple.h"
+#include "windowCastlejau.h"
 
-WindowBernsteinSimple::WindowBernsteinSimple(QWidget *parent)
-    : myGLWidget(60, parent, "Courbe de Bezier (Bernstein simple)")
+WindowCastlejau::WindowCastlejau(QWidget *parent)
+    : myGLWidget(60, parent, "Courbe de Bezier (Castlejau)")
 {
 }
 
-void WindowBernsteinSimple::initializeGL()
+void WindowCastlejau::initializeGL()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
@@ -23,7 +23,7 @@ void WindowBernsteinSimple::initializeGL()
     cb.addPoint( point3(2,-2,0) );
 }
 
-void WindowBernsteinSimple::keyPressEvent(QKeyEvent *keyEvent)
+void WindowCastlejau::keyPressEvent(QKeyEvent *keyEvent)
 {
     switch (keyEvent->key()) {
     case '+':
@@ -63,7 +63,7 @@ void WindowBernsteinSimple::keyPressEvent(QKeyEvent *keyEvent)
     update();
 }
 
-void WindowBernsteinSimple::resizeGL(int width, int height)
+void WindowCastlejau::resizeGL(int width, int height)
 {
     if(height == 0)
         height = 1;
@@ -74,7 +74,7 @@ void WindowBernsteinSimple::resizeGL(int width, int height)
     glMatrixMode(GL_MODELVIEW);
 }
 
-void WindowBernsteinSimple::paintGL()
+void WindowCastlejau::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -104,13 +104,22 @@ void WindowBernsteinSimple::paintGL()
 
     // Dessiner ici la courbe de Bézier.
     // Vous devez avoir implémenté Bernstein précédemment.
-    glColor3f (1.0, 1.0, 1.0);
+    glColor3f (0.0, 1.0, 0.0);
     glBegin(GL_LINE_STRIP);
 
     for(float i=0; i<=resolution; i++){
         point3 pU = cb.calculPuBernstein(i/resolution);
         glVertex3f(pU.x, pU.y, pU.z);
     }
+    glEnd();
+
+    glColor3f (0.0, 0.0, 1.0);
+    glBegin(GL_LINE_STRIP);
+    for(float i=0; i<=resolution; i++){
+        point3 pU = cb.calculPuCastlejau(i/resolution);
+        glVertex3f(pU.x, pU.y-2, pU.z);
+    }
+    glEnd();
 
     glEnd();
     glFlush();

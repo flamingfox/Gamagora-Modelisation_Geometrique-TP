@@ -129,7 +129,7 @@ void WindowBernsteinDouble::C0DoubleBezier(CourbeBezier Courbe1, CourbeBezier Co
     glColor3f (0.0, 1.0, 1.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Courbe1.calculPu( i/resolution );
+        point3 pU = Courbe1.calculPuBernstein( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
@@ -148,7 +148,7 @@ void WindowBernsteinDouble::C0DoubleBezier(CourbeBezier Courbe1, CourbeBezier Co
     glColor3f (1.0, 1.0, 0.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Courbe2.calculPu( i/resolution );
+        point3 pU = Courbe2.calculPuBernstein( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
@@ -172,7 +172,7 @@ void WindowBernsteinDouble::C1DoubleBezier(CourbeBezier Courbe1, CourbeBezier Co
     glColor3f (0.0, 1.0, 1.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Courbe1bis.calculPu( i/resolution );
+        point3 pU = Courbe1bis.calculPuBernstein( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();
@@ -180,7 +180,7 @@ void WindowBernsteinDouble::C1DoubleBezier(CourbeBezier Courbe1, CourbeBezier Co
     glColor3f (1.0, 1.0, 0.0);
     glBegin(GL_LINE_STRIP);
     for(float i=0; i<=resolution; i++){
-        point3 pU = Courbe2bis.calculPu( i/resolution );
+        point3 pU = Courbe2bis.calculPuBernstein( i/resolution );
         glVertex3f(pU.x, pU.y, pU.z);
     }
     glEnd();

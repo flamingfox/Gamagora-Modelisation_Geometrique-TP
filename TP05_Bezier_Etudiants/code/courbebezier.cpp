@@ -19,7 +19,7 @@ unsigned int CourbeBezier::getDegree()
     return 0;
 }
 
-point3 CourbeBezier::calculPu(const float &progressionCourbe)
+point3 CourbeBezier::calculPuBernstein(const float &progressionCourbe)
 {
     point3 pU;
 
@@ -28,6 +28,11 @@ point3 CourbeBezier::calculPu(const float &progressionCourbe)
     }
 
     return pU;
+}
+
+point3 CourbeBezier::calculPuCastlejau(const float &progressionCourbe)
+{
+    return castlejau(tabPoint, progressionCourbe);
 }
 
 point3& CourbeBezier::operator[] (unsigned int i) {
@@ -58,5 +63,20 @@ float CourbeBezier::fact(const int n)
 float CourbeBezier::Bernstein(int i, int n, float t)
 {
     return fact(n) / (fact(i)*fact(n-i)) * powf(t, i) * powf(1-t, n-i);
+}
+
+point3 CourbeBezier::castlejau(std::vector<point3>& pointI, float u)
+{
+    if(pointI.size() == 2 ){
+        return pointI[0]+(pointI[1]-pointI[0])*u;
+    }
+
+    std::vector<point3> pointTmp;
+
+    for(int i=0; i<pointI.size()-1; i++){
+        pointTmp.push_back(pointI[i]+(pointI[i+1]-pointI[i])*u);
+    }
+
+    return castlejau(pointTmp, u);
 }
 

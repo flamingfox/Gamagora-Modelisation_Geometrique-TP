@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     windowHermite.cpp \
     windowBernsteinSimple.cpp \
     windowBernsteinDouble.cpp \
-    courbebezier.cpp
+    courbebezier.cpp \
+    windowCastlejau.cpp
 
 HEADERS  += \    
     lib/myglwidget.h \
@@ -31,4 +32,5 @@ HEADERS  += \
     windowHermite.h \
     windowBernsteinSimple.h \
     windowBernsteinDouble.h \
-    courbebezier.h
+    courbebezier.h \
+    windowCastlejau.h
