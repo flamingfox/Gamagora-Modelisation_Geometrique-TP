@@ -1,13 +1,13 @@
-#ifndef COURBEREGLEE_H
-#define COURBEREGLEE_H
+#ifndef SURFACECASTLEJAU_H
+#define SURFACECASTLEJAU_H
 
 #include "courbebezier.h"
 
-class SurfaceReglee
+class SurfaceCastlejau
 {
     CourbeBezier courbeForme, courbePorteuse;
-public:    
-    SurfaceReglee(){}
+public:
+    SurfaceCastlejau(){}
 
     void addPointForme(const point3& point);
     void addPointPorteuse(const point3& point);
@@ -18,7 +18,7 @@ public:
     unsigned int getOrdrePorteuse();
     unsigned int getDegreePorteuse();
 
-    point3 calculPuBernstein(const float& progressionCourbeForme, const float& progressionCourbePorteuse);
+    point3 calculPuCastlejau(const float& progressionCourbeForme, const float& progressionCourbePorteuse);
 };
 
 #endif // COURBEREGLEE_H

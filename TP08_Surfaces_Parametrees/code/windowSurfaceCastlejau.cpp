@@ -1,22 +1,22 @@
-#include "windowSurfaceReglee.h"
+#include "windowSurfaceCastlejau.h"
 
-windowSurfaceReglee::windowSurfaceReglee(QWidget *parent)
-    : myGLWidget(60, parent, "Surface réglée")
+windowSurfaceCastlejau::windowSurfaceCastlejau(QWidget *parent)
+    : myGLWidget(60, parent, "Surface Castlejau")
 {
 }
 
-void windowSurfaceReglee::initializeGL()
+void windowSurfaceCastlejau::initializeGL()
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
 
-    sr.addPointForme( point3(1,2,0) );
+    sr.addPointForme( point3(2,2,0) );
     sr.addPointForme( point3(0,0,0) );
-    sr.addPointForme( point3(1,-2,0) );
+    sr.addPointForme( point3(2,-2,0) );
 
-    sr.addPointPorteuse( point3(-2,0,0) );
+    sr.addPointPorteuse( point3(-1,0,0) );
     sr.addPointPorteuse( point3(0,1,0) );
-    sr.addPointPorteuse( point3(2,0,0) );
+    sr.addPointPorteuse( point3(1,0,0) );
 
 
 
@@ -36,7 +36,7 @@ void windowSurfaceReglee::initializeGL()
     */
 }
 
-void windowSurfaceReglee::keyPressEvent(QKeyEvent *keyEvent)
+void windowSurfaceCastlejau::keyPressEvent(QKeyEvent *keyEvent)
 {
     switch (keyEvent->key()) {
     case Qt::Key_Escape:
@@ -47,7 +47,7 @@ void windowSurfaceReglee::keyPressEvent(QKeyEvent *keyEvent)
     update();
 }
 
-void windowSurfaceReglee::resizeGL(int width, int height)
+void windowSurfaceCastlejau::resizeGL(int width, int height)
 {
     if(height == 0)
         height = 1;
@@ -59,7 +59,7 @@ void windowSurfaceReglee::resizeGL(int width, int height)
     glMatrixMode(GL_MODELVIEW);
 }
 
-void windowSurfaceReglee::paintGL()
+void windowSurfaceCastlejau::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -77,24 +77,24 @@ void windowSurfaceReglee::paintGL()
     for(float j=0; j<=resolution; j++){
         for(float i=0; i<=resolution; i++){
             if(i!=resolution && j!=resolution){
-                pUtmp = sr.calculPuBernstein(i/resolution, j/resolution);
+                pUtmp = sr.calculPuCastlejau(i/resolution, j/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
 
-                pUtmp = sr.calculPuBernstein(i/resolution, (j+1)/resolution);
+                pUtmp = sr.calculPuCastlejau(i/resolution, (j+1)/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
 
-                pUtmp = sr.calculPuBernstein((i+1)/resolution, j/resolution);
+                pUtmp = sr.calculPuCastlejau((i+1)/resolution, j/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
             }
 
             if(i!=0 && j!=0){
-                pUtmp = sr.calculPuBernstein((i-1)/resolution, j/resolution);
+                pUtmp = sr.calculPuCastlejau((i-1)/resolution, j/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
 
-                pUtmp = sr.calculPuBernstein(i/resolution, j/resolution);
+                pUtmp = sr.calculPuCastlejau(i/resolution, j/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
 
-                pUtmp = sr.calculPuBernstein(i/resolution, (j-1)/resolution);
+                pUtmp = sr.calculPuCastlejau(i/resolution, (j-1)/resolution);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
             }
         }
@@ -106,16 +106,16 @@ void windowSurfaceReglee::paintGL()
 
     for(float j=0; j<=resolution; j++){
         for(float i=0; i<=resolution; i++){
-            pUor = sr.calculPuBernstein(i/resolution, j/resolution);
+            pUor = sr.calculPuCastlejau(i/resolution, j/resolution);
             if(i!=resolution){
-                pUtmp = sr.calculPuBernstein((i+1)/resolution, j/resolution);
+                pUtmp = sr.calculPuCastlejau((i+1)/resolution, j/resolution);
                 glVertex3f(pUor.x, pUor.y, pUor.z);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
             }
 
 
             if(j!=resolution){
-                pUtmp = sr.calculPuBernstein(i/resolution, (j+1)/resolution);
+                pUtmp = sr.calculPuCastlejau(i/resolution, (j+1)/resolution);
                 glVertex3f(pUor.x, pUor.y, pUor.z);
                 glVertex3f(pUtmp.x, pUtmp.y, pUtmp.z);
             }

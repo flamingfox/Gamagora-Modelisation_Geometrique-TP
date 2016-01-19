@@ -1,5 +1,5 @@
-#ifndef WINDOWSURFACREGLEE_H
-#define WINDOWSURFACREGLEE_H
+#ifndef WINDOWSURFACECASTLEJAU_H
+#define WINDOWSURFACECASTLEJAU_H
 
 #include "lib/myGLWidget.h"
 #include <QImage>
@@ -19,16 +19,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lib/struct.h"
-#include "surfacereglee.h"
+#include "surfacecastlejau.h"
 
-class windowSurfaceReglee : public myGLWidget
+class windowSurfaceCastlejau : public myGLWidget
 {
-    SurfaceReglee sr;
+    SurfaceCastlejau sr;
 
 public:
     unsigned int resolution = 10;
 
-    explicit windowSurfaceReglee(QWidget *parent = 0);
+    explicit windowSurfaceCastlejau(QWidget *parent = 0);
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
@@ -37,4 +37,4 @@ public:
 private:
 };
 
-#endif // WINDOWSURFACREGLEE_H
+#endif // WINDOWSURFACECASTLEJAU_H

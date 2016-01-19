@@ -30,11 +30,11 @@ unsigned int SurfaceReglee::getDegreePorteuse()
     return courbePorteuse.getDegree();
 }
 
-point3 SurfaceReglee::calculPu(const float &progressionCourbeForme, const float &progressionCourbePorteuse)
+point3 SurfaceReglee::calculPuBernstein(const float &progressionCourbeForme, const float &progressionCourbePorteuse)
 {
     point3 retour;
-    retour = courbeForme.calculPu(progressionCourbeForme);
-    retour = retour + courbePorteuse.calculPu(progressionCourbePorteuse);
+    retour = courbeForme.calculPuBernstein(progressionCourbeForme);
+    retour = retour + courbePorteuse.calculPuBernstein(progressionCourbePorteuse);
 
     return retour;
 }

@@ -22,11 +22,19 @@ SOURCES += main.cpp\
     lib/struct.cpp \
     windowSurfaceReglee.cpp \
     courbebezier.cpp \
-    surfacereglee.cpp
+    surfacereglee.cpp \
+    surfacecastlejau.cpp \
+    surfacebalayee.cpp \
+    windowSurfaceBalayee.cpp \
+    windowSurfaceCastlejau.cpp
 
 HEADERS  += \
     lib/myglwidget.h \
     lib/struct.h \
     windowSurfaceReglee.h \
     courbebezier.h \
-    surfacereglee.h
+    surfacereglee.h \
+    surfacecastlejau.h \
+    surfacebalayee.h \
+    windowSurfaceBalayee.h \
+    windowSurfaceCastlejau.h

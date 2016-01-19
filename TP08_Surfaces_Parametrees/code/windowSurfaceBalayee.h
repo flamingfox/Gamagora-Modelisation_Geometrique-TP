@@ -1,5 +1,5 @@
-#ifndef WINDOWSURFACREGLEE_H
-#define WINDOWSURFACREGLEE_H
+#ifndef WINDOWSURFACEBALAYEE_H
+#define WINDOWSURFACEBALAYEE_H
 
 #include "lib/myGLWidget.h"
 #include <QImage>
@@ -19,16 +19,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include "lib/struct.h"
-#include "surfacereglee.h"
+#include "surfacebalayee.h"
 
-class windowSurfaceReglee : public myGLWidget
+class windowSurfaceBalayee : public myGLWidget
 {
-    SurfaceReglee sr;
+    surfaceBalayee sr;
 
 public:
-    unsigned int resolution = 10;
+    unsigned int resolutionForme = 10, resolutionPorteuse = 10;
 
-    explicit windowSurfaceReglee(QWidget *parent = 0);
+    explicit windowSurfaceBalayee(QWidget *parent = 0);
     void initializeGL();
     void resizeGL(int width, int height);
     void paintGL();
@@ -37,4 +37,4 @@ public:
 private:
 };
 
-#endif // WINDOWSURFACREGLEE_H
+#endif // WINDOWSURFACEBALAYEE_H
